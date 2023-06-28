@@ -1,0 +1,19 @@
+#!/bin/bash
+# arin-get-ns  zone
+
+usage()
+{
+  echo "usage:  $0  zone"
+}
+
+if [ -z "$1" ]; then
+  usage
+  exit 1
+fi
+
+if [ -z "$ARIN_API_PREFIX" -o -z "$ARIN_API_KEY" ]; then
+  echo "env vars ARIN_API_PREFIX and ARIN_API_KEY must be defined"
+  exit 2
+fi
+
+curl -s $ARIN_API_PREFIX/delegation/$1?apikey=$ARIN_API_KEY | xq .delegation.nameservers.nameserver[] | tr -d '"' | tr 'A-Z' 'a-z'
