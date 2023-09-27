@@ -1,0 +1,111 @@
+#!/bin/bash
+# arin-add-ns  zone  nameserver
+
+usage()
+{
+  echo "usage:  $0  zone  nameserver1 nameserver2 ..."
+}
+
+# at least zone and two nameservers
+if [ -z "$3" ]; then
+  usage
+  exit 1
+fi
+
+z=$1
+shift
+n=$1
+nn=($1)
+i=0
+shift
+while [ -n "$1" ]
+do
+  n="$n
+$1"
+  i=$(( $i +1 ))
+  nn[i]=$1
+  shift
+done
+n=`sort <<< "$n"`
+
+echo "============== desired:"
+echo "$n"
+
+if [ -z "$ARIN_API_PREFIX" -o -z "$ARIN_API_KEY" ]; then
+  echo "env vars ARIN_API_PREFIX and ARIN_API_KEY must be defined"
+  exit 2
+fi
+
+# get existing nameservers for zone
+raw=`curl -s $ARIN_API_PREFIX/delegation/$z?apikey=$ARIN_API_KEY`
+ret=$?
+if [ $ret -ne 0 ]; then
+  echo "error $ret $raw"
+  exit $ret
+fi
+old=`xq .delegation.nameservers.nameserver[] <<< "$raw" | tr -d '"' | tr 'A-Z' 'a-z' | sort`
+
+echo "============== existing:"
+echo "$old"
+
+echo "============== adding:"
+# add new
+for x in $n
+do
+  for y in $old
+  do
+    if [ "$x" = "$y" ]; then
+      echo "$x is already a nameserver"
+      x=
+      break
+    fi
+  done
+  if [ -n "$x" ]; then
+    echo "adding $x"
+    # add a nameserver
+    result=`curl -s -X POST $ARIN_API_PREFIX/delegation/$z/nameserver/$x?apikey=$ARIN_API_KEY | xq .delegation.nameservers.nameserver[] | tr -d '"' | tr 'A-Z' 'a-z' | sort`
+    #echo "result "$result
+  fi
+done
+
+echo "============== deleting:"
+# delete old nameservers
+for y in $old
+do
+  for x in $n
+  do
+    if [ "$x" = "$y" ]; then
+      echo "$y is still a nameserver"
+      y=
+      break
+    fi
+  done
+  if [ -n "$y" ]; then
+    # delete a nameserver
+    echo "deleting $y"
+    raw=`curl -s -X DELETE $ARIN_API_PREFIX/delegation/$z/nameserver/$y?apikey=$ARIN_API_KEY`
+    ret=$?
+    if [ $ret -ne 0 ]; then
+      echo "error $ret $raw"
+      exit $ret
+    fi
+    extract=`xq .delegation.nameservers.nameserver[] <<< "$raw"`
+    ret=$?
+    if [ $ret -ne 0 ]; then
+      echo "error $ret $extract"
+      exit $ret
+    fi
+    result=`tr -d '"' <<< "$extract" | tr 'A-Z' 'a-z' | sort`
+  fi
+done
+
+# show result
+echo "============== new:"
+echo "$result"
+
+# check result
+if [ "$n" = "$result" ]; then
+  echo "success"
+else
+  echo "something went wrong"
+fi
