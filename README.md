@@ -1,7 +1,7 @@
 # ARIN    
 ARIN.net API scripts    
     
-~~~json
+~~~
 Production: reg.arin.net    
 Test server: reg.ota.arin.net    
 test info at: https://www.arin.net/reference/tools/testing/    
