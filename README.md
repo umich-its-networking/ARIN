@@ -9,12 +9,16 @@ test info at: https://www.arin.net/reference/tools/testing/
 prod overview: https://www.arin.net/resources/manage/regrws/    
 Quick start guide: https://www.arin.net/resources/manage/regrws/quickstart/    
 
+Put URL and API key in a file to add to the environment:
+export ARIN_API_PREFIX=https://reg.arin.net/rest
+export ARIN_API_KEY=API-XXXX-YYYY-...
+
+source ~/.ssh/arin.env
+
 arin-get-ns 0.35.in-addr.arpa
 dns1.itd.umich.edu
 dns2.itd.umich.edu
 dns3.umich.org
-
-
 
 arin-add-ns 0.35.in-addr.arpa cffw1.dns.umich.com
 dns1.itd.umich.edu
@@ -22,12 +26,10 @@ dns2.itd.umich.edu
 dns3.umich.org
 cffw1.dns.umich.com
 
-
 arin-delete-ns 0.35.in-addr.arpa dns1.itd.umich.edu
 cffw1.dns.umich.com
 dns2.itd.umich.edu
 dns3.umich.org
-
 
 arin-set-ns 0.35.in-addr.arpa cffw1.dns.umich.com cffw2.dns.umich.net
 ============== desired:
