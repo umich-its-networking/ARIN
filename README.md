@@ -15,34 +15,35 @@ export ARIN_API_KEY=API-XXXX-YYYY-...
 
 source ~/.ssh/arin.env
 
-arin-get-ns 0.35.in-addr.arpa
-dns1.itd.umich.edu
-dns2.itd.umich.edu
+## 10.in-addr.arpa is not a real zone at ARIN, just an example
+arin-get-ns 0.10.in-addr.arpa
+dns1.example.com
+dns2.example.com
 
-arin-add-ns 0.35.in-addr.arpa dns3.umich.org
-dns1.itd.umich.edu
-dns2.itd.umich.edu
-dns3.umich.org
+arin-add-ns 0.10.in-addr.arpa dns3.example.com
+dns1.example.com
+dns2.example.com
+dns3.example.com
 
-arin-delete-ns 0.35.in-addr.arpa dns1.itd.umich.edu
-dns2.itd.umich.edu
-dns3.umich.org
+arin-delete-ns 0.10.in-addr.arpa dns1.example.com
+dns2.example.com
+dns3.example.com
 
-arin-set-ns 0.35.in-addr.arpa dns1.itd.umich.edu dns2.itd.umich.edu
+arin-set-ns 0.10.in-addr.arpa dns1.example.com dns2.example.com
 ============== desired:
-dns1.itd.umich.edu
-dns2.itd.umich.edu
+dns1.example.com
+dns2.example.com
 ============== existing:
-dns2.itd.umich.edu
-dns3.umich.org
+dns2.example.com
+dns3.example.com
 ============== adding:
-adding dns1.itd.umich.edu
-dns2.itd.umich.edu is already a nameserver
+adding dns1.example.com
+dns2.example.com is already a nameserver
 ============== deleting:
-dns2.itd.umich.edu is still a nameserver
-deleting dns3.umich.org
+dns2.example.com is still a nameserver
+deleting dns3.example.com
 ============== new:
-dns1.itd.umich.edu
-dns2.itd.umich.edu
+dns1.example.com
+dns2.example.com
 success
 ~~~
